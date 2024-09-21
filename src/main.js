@@ -1,22 +1,30 @@
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-import { auth } from "./app/firebase.js";
+import { auth, database } from "./app/firebase.js";
 import { logincheck } from "./app/loginCheck.js";
-import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+import {getDatabase} from "https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js"
 import "./app/signupForm.js";
 import "./app/signinForm.js";
 import "./app/logout.js";
 
+
 let chart;
 const db = getFirestore(); // Inicializar Firestore
-
 // Ocultar el contenedor de la gráfica al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
+    
     document.querySelector('#chart-container').style.display = 'none';
 });
 
 // Escuchar cambios en el estado de autenticación del usuario
 onAuthStateChanged(auth, async (user) => {
+    console.log('User status changed', user);
     if (user) {
+        console.log('Document is fully loaded and parsed');
+    database.ref('data/');
+    starCountRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+     console.log(data);
+    });
         document.querySelector('#chart-container').style.display = 'block';
         logincheck(user);
 
@@ -34,10 +42,13 @@ onAuthStateChanged(auth, async (user) => {
         document.querySelector('#chart-container').style.display = 'none';
         logincheck(null);
     }
+    
 });
 
 // Función para obtener los tipos de medidas y llenar el desplegable
 async function obtenerTiposDeMedidas() {
+        
+
     const medidas = new Set();
     const q = query(collection(db, "tus_datos"));  // Ajusta el nombre de tu colección
     const querySnapshot = await getDocs(q);
